@@ -13,7 +13,7 @@ from xgboost import XGBRegressor
 from catboost import CatBoostRegressor
 from src.exception import CustomException
 from src.logger import logging
-from src.utils import save_object, evaluate_model
+from src.utils import save_object, evaluate_model, model_hyperparameters
 from src.configs.model_trainer_config import ModelTrainerConfig
 
 
@@ -43,9 +43,11 @@ class ModelTrainer:
                 "Catboost Regressor": CatBoostRegressor(verbose=False)
             }
 
+            params = model_hyperparameters()
+
             model_report: dict = evaluate_model(
-                X_train=X_train, y_train=y_train,
-                X_test=X_test, y_test=y_test, models=models
+                X_train=X_train, y_train=y_train, X_test=X_test,
+                y_test=y_test, models=models, params=params
             )
 
             best_model_score = max(sorted(model_report.values()))

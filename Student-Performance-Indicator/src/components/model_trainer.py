@@ -1,6 +1,9 @@
 """ This module contains the training code for different models """
 import os
 import sys
+from operator import index
+
+import pandas as pd
 from sklearn.metrics import r2_score
 from sklearn.linear_model import LinearRegression
 from sklearn.neighbors import KNeighborsRegressor
@@ -45,20 +48,26 @@ class ModelTrainer:
 
             params = model_hyperparameters()
 
-            model_report: dict = evaluate_model(
+            model_report: list = evaluate_model(
                 X_train=X_train, y_train=y_train, X_test=X_test,
                 y_test=y_test, models=models, params=params
             )
 
-            best_model_score = max(sorted(model_report.values()))
-            best_model_name = list(model_report.keys())[
-                list(model_report.values()).index(best_model_score)
-            ]
+            # Saving Model Report
+            pd.DataFrame(model_report).to_csv(
+                self.model_trainer_config.trained_model_report_path,
+                index=False, header=True
+            )
+
+            best_model_entry = max(model_report, key=lambda x: x["Test R-2 Score"])
+            best_model_name = best_model_entry["Model Name"]
+            best_model_score = best_model_entry["Test R-2 Score"]
 
             best_model = models[best_model_name]
 
             if best_model_score < 0.6:
-                raise CustomException("No Best Model Found")
+                raise CustomException("No Best Model Found", sys)
+
             logging.info("Found best model on both training and test dataset")
 
             save_object(

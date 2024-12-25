@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import dill
 from sklearn.metrics import r2_score
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import GridSearchCV
 from src.exception import CustomException
 from src.logger import logging
 
@@ -24,9 +24,10 @@ def save_object(file_path, file_object):
 
 def evaluate_model(X_train, y_train, X_test, y_test, models, params):
     try:
-        report = {}
+        report = []
 
         for i in range(len(list(models))):
+            model_name = list(models.keys())[i]
             model = list(models.values())[i]
             param = params[list(models.keys())[i]]
 
@@ -49,7 +50,11 @@ def evaluate_model(X_train, y_train, X_test, y_test, models, params):
             train_model_score = r2_score(y_train, train_prediction)
             test_model_score = r2_score(y_test, test_prediction)
 
-            report[list(models.keys())[i]] = test_model_score
+            report.append({
+                "Model Name": model_name,
+                "Train R-2 Score": train_model_score,
+                "Test R-2 Score": test_model_score
+            })
 
             logging.info("Training for `%s` ended", model)
 

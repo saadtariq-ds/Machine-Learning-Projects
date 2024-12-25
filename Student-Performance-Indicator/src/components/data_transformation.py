@@ -7,15 +7,11 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
-from dataclasses import dataclass
 from src.exception import CustomException
 from src.logger import logging
 from src.utils import save_object
+from src.configs.data_transformation_config import DataTransformationConfig
 
-
-@dataclass()
-class DataTransformationConfig:
-    preprocessing_obj_file_path: str = os.path.join('artifacts', 'preprocessor.pkl')
 
 
 class DataTransformation:
